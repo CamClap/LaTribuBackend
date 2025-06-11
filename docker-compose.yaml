@@ -19,9 +19,6 @@ services:
       - './symfony/:/www/symfony'
       - './symfony/var:/www/symfony/var'
       - './.docker/php/php-ini-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini'
-    networks:
-      - mediapp_network
-
 
   bdd_mysql_laTribu:
     container_name: bdd_mysql_laTribu
@@ -35,5 +32,6 @@ services:
       - "3306:3306"
     volumes:
       - db-latribu:/var/lib/mysql
+
 volumes:
   db-latribu:
