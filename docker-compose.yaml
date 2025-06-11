@@ -1,0 +1,39 @@
+services:
+  webserver:
+    container_name: server_medic
+    image: 'nginx:1.25-alpine3.18'
+    working_dir: /www
+    volumes:
+      - './symfony:/www/symfony'
+      - './.docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf'
+    ports:
+      - '8080:80'
+
+  php_latribu:
+    container_name: php_latribu
+    build: ./.docker/php
+    working_dir: /www/symfony
+    depends_on:
+      -   bdd_mysql_laTribu
+    volumes:
+      - './symfony/:/www/symfony'
+      - './symfony/var:/www/symfony/var'
+      - './.docker/php/php-ini-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini'
+    networks:
+      - mediapp_network
+
+
+  bdd_mysql_laTribu:
+    container_name: bdd_mysql_laTribu
+    image: mysql:9.3.0
+    environment:
+      MYSQL_DATABASE: 'latribu'
+      MYSQL_USER: 'Camille'
+      MYSQL_PASSWORD: '1234'
+      MYSQL_ROOT_PASSWORD: '12345'
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-latribu:/var/lib/mysql
+volumes:
+  db-latribu:
