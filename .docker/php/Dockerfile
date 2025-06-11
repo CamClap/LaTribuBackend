@@ -13,6 +13,6 @@ RUN apk update \
     nodejs \
     npm \
     yarn \
-    && apk add libpq-dev && docker-php-ext-install pdo_pgsql
+    && apk add libpq-dev && docker-php-ext-install pdo_mysql
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
