@@ -12,6 +12,7 @@ services:
   php_latribu:
     container_name: php_latribu
     build: ./.docker/php
+    user: "1000"
     working_dir: /www/symfony
     depends_on:
       -   bdd_mysql_laTribu
