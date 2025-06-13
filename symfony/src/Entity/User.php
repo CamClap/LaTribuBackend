@@ -4,8 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserRepository;
+use App\State\UserPasswordHasher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,13 +18,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[ApiResource(
     operations: [
         new GetCollection(), // GET /api/users
-        new Get()            // GET /api/users/{id}
+        new Get(),           // GET /api/users/{id}
+        new Post(processor: UserPasswordHasher::class),           // POST /api/users
+        new Put(processor: UserPasswordHasher::class),   // PUT /api//{id}
     ],
      normalizationContext: ['groups' => ['user:read']],
      denormalizationContext: ['groups' => ['user:create', 'user:update', 'user:write']],
