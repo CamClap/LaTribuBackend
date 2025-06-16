@@ -61,9 +61,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Group>
      */
-    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'Users')]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
     #[Groups(['user:read', 'user:create', 'user:update'])]
     private Collection $family;
+
+
 
     public function __construct()
     {
@@ -169,4 +171,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 }
