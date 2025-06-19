@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="913c75d6-d3b5-4406-8846-1d4b79c32843" name="deployttribuback">
+        <fileTransfer rootFolder="/home/ubuntu" accessType="SFTP" host="34.206.98.111" port="22" sshConfigId="793a117e-7646-431d-94f7-65f6fa33d181" sshConfig="symfony" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

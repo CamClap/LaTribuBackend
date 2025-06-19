@@ -8,14 +8,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
+use App\State\GroupProcessor;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
+#[Post(processor: GroupProcessor::class)]
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
     operations: [
-        new Post()
+        new Post(processor: GroupProcessor::class)
     ]
 )]
+
 class Group
 {
     #[ORM\Id]

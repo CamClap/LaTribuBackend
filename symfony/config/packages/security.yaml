@@ -15,10 +15,9 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        main:
+        login:
+            pattern: ^/auth
             stateless: true
-            provider: app_user_provider
-
             json_login:
                 check_path: /auth
                 username_path: email
@@ -26,7 +25,12 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-            jwt: ~   # ✅ Ceci est à placer ici, pas dans json_login
+            # 🔒 Accès à toutes les routes protégées (ex: /api/...)
+        api:
+            pattern: ^/
+            stateless: true
+            jwt: ~
+            provider: app_user_provider
 
     access_control:
         - { path: ^/api/users, roles: PUBLIC_ACCESS }
