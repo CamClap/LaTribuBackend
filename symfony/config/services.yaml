@@ -26,3 +26,16 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\State\UserDataPersister:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $requestStack: '@request_stack'
+            $params: '@parameter_bag'
+        tags:
+            - { name: 'api_platform.state.processor' }
+
+    App\Controller\UserCreateController:
+        autowire: true
+        autoconfigure: true
+        public: true

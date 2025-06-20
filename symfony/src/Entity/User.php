@@ -17,22 +17,21 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet email.')]
 #[ApiResource(
     operations: [
-        new GetCollection(), // GET /api/users
-        new Get(),           // GET /api/users/{id}
-        new Post(processor: UserPasswordHasher::class),           // POST /api/users
-        new Put(processor: UserPasswordHasher::class),   // PUT /api//{id}
-        new Delete(security: "is_granted('ROLE_ADMIN')") // DELETE /api/users/{id}
+        new GetCollection(),
+        new Get(),
+        new Post(processor: UserPasswordHasher::class),
+        new Put(processor: UserPasswordHasher::class),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
     ],
-     normalizationContext: ['groups' => ['user:read']],
-     denormalizationContext: ['groups' => ['user:create', 'user:update', 'user:write']],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:create', 'user:write']]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -43,136 +42,70 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 3, minMessage: "Le nom doit contenir au moins 3 caractères.")]
+    #[Groups(['user:read', 'user:create'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[Groups(['user:read'])]
     private ?string $nickname = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "Le format de l'email est invalide.")]
+    #[Groups(['user:read', 'user:create'])]
     private ?string $email = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     #[Groups(['user:read'])]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
-    #[Groups(['user:write'])]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Groups(['user:create'])]
     private ?string $password = null;
 
     /**
      * @var Collection<int, Group>
      */
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
-    #[Groups(['user:read', 'user:create', 'user:update'])]
+    #[Groups(['user:read'])]
     private Collection $family;
-
-
 
     public function __construct()
     {
         $this->family = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function getName(): ?string
-    {
-    return $this->name;
-    }
-
+    public function getName(): ?string { return $this->name; }
     public function setName(string $name): static { $this->name = $name; return $this; }
 
     public function getNickname(): ?string { return $this->nickname; }
     public function setNickname(?string $nickname): static { $this->nickname = $nickname; return $this; }
 
+    public function getEmail(): ?string { return $this->email; }
+    public function setEmail(string $email): static { $this->email = $email; return $this; }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
+    public function getUserIdentifier(): string { return (string) $this->email; }
 
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->email;
-    }
-
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
+    public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
 
-        return $this;
-    }
+    public function getPassword(): ?string { return $this->password; }
+    public function setPassword(string $password): static { $this->password = $password; return $this; }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+    public function eraseCredentials(): void { }
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
-    /**
-     * @return Collection<int, Group>
-     */
-    public function getFamily(): Collection
-    {
-        return $this->family;
-    }
+    public function getFamily(): Collection { return $this->family; }
 
     public function addFamily(Group $family): static
     {
@@ -180,7 +113,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->family->add($family);
             $family->addUser($this);
         }
-
         return $this;
     }
 
@@ -189,8 +121,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->family->removeElement($family)) {
             $family->removeUser($this);
         }
-
         return $this;
     }
-
 }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250615142748 extends AbstractMigration
+final class Version20250620102713 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,13 +21,7 @@ final class Version20250615142748 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE `group` ADD creator_id INT NOT NULL
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `group` ADD CONSTRAINT FK_6DC044C561220EA6 FOREIGN KEY (creator_id) REFERENCES user (id)
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_6DC044C561220EA6 ON `group` (creator_id)
+            ALTER TABLE user DROP nickname
         SQL);
     }
 
@@ -35,13 +29,7 @@ final class Version20250615142748 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE `group` DROP FOREIGN KEY FK_6DC044C561220EA6
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP INDEX IDX_6DC044C561220EA6 ON `group`
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `group` DROP creator_id
+            ALTER TABLE user ADD nickname VARCHAR(100) DEFAULT NULL
         SQL);
     }
 }
