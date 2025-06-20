@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasher;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,6 +29,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),           // GET /api/users/{id}
         new Post(processor: UserPasswordHasher::class),           // POST /api/users
         new Put(processor: UserPasswordHasher::class),   // PUT /api//{id}
+        new Delete(security: "is_granted('ROLE_ADMIN')") // DELETE /api/users/{id}
     ],
      normalizationContext: ['groups' => ['user:read']],
      denormalizationContext: ['groups' => ['user:create', 'user:update', 'user:write']],
@@ -39,6 +41,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Groups(['user:read'])]
     private ?int $id = null;
+
+    #[ORM\Column(length: 100)]
+    #[Groups(['user:read', 'user:create', 'user:update'])]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['user:read', 'user:create', 'user:update'])]
+    private ?string $nickname = null;
 
     #[ORM\Column(length: 180)]
     #[Groups(['user:read', 'user:create', 'user:update'])]
@@ -76,6 +86,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->id;
     }
+
+    public function getName(): ?string
+    {
+    return $this->name;
+    }
+
+    public function setName(string $name): static { $this->name = $name; return $this; }
+
+    public function getNickname(): ?string { return $this->nickname; }
+    public function setNickname(?string $nickname): static { $this->nickname = $nickname; return $this; }
+
 
     public function getEmail(): ?string
     {
