@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\GroupProcessor;
 
@@ -15,7 +16,8 @@ use App\State\GroupProcessor;
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
     operations: [
-        new Post(processor: GroupProcessor::class)
+        new Post(processor: GroupProcessor::class),
+        new GetCollection(), // GET /api/groups
     ]
 )]
 
