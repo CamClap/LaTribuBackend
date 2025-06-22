@@ -9,13 +9,16 @@ class JWTCreatedListener
     {
         $user = $event->getUser();
 
-        // On récupère le payload actuel
+        // Récupérer le payload actuel
         $payload = $event->getData();
 
-        // Ajoute l'id utilisateur (si l'entité User a getId())
+        // Ajouter l'id utilisateur
         $payload['id'] = $user->getId();
 
-        // Remet à jour les données dans le token
+        // Ajouter le nom de l'utilisateur
+        $payload['name'] = $user->getName();
+
+        // Mettre à jour le payload dans le token
         $event->setData($payload);
     }
 }
