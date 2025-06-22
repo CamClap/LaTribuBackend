@@ -12,7 +12,6 @@ use ApiPlatform\Metadata\ApiResource;
 use App\State\GroupProcessor;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
-#[Post(processor: GroupProcessor::class)]
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
     operations: [
@@ -21,6 +20,7 @@ use App\State\GroupProcessor;
     ]
 )]
 
+#[ApiFilter(SearchFilter::class, properties: ['users.id' => 'exact'])]
 class Group
 {
     #[ORM\Id]
@@ -29,12 +29,14 @@ class Group
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'group:read'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'family')]
+    #[Groups(['group:read', 'group:write'])]
     private Collection $users;
 
     public function __construct()
@@ -44,6 +46,7 @@ class Group
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['group:read', 'group:write'])]
     private ?User $creator = null;
 
 

@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiSubresource;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Link;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasher;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,6 +20,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\UserGroupsController;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -25,6 +28,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(),
+        new Get(
+                    name: 'groups_for_user',
+                    uriTemplate: '/users/{id}/groups',
+                    controller: UserGroupsController::class,
+                    read: false
+                ),
+        new GetCollection(  // Sous-ressource groups of user
+            uriTemplate: '/users/{id}/groups',
+            uriVariables: [
+                'id' => new Link(
+                    fromClass: User::class,
+                    fromProperty: 'family'
+                )
+            ],
+            normalizationContext: ['groups' => ['group:read']],
+            security: "is_granted('ROLE_USER')"
+        ),
         new Get(),
         new Post(processor: UserPasswordHasher::class),
         new Put(processor: UserPasswordHasher::class),
@@ -70,7 +90,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Group>
      */
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
-    #[Groups(['user:read'])]
+    #[ApiSubresource]
+    #[Groups(['user:read', 'group:read'])]
     private Collection $family;
 
     public function __construct()
