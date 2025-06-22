@@ -34,7 +34,7 @@ use App\Controller\UserGroupsController;
                     controller: UserGroupsController::class,
                     read: false
                 ),
-        new GetCollection(  // Sous-ressource groups of user
+        new GetCollection(
             uriTemplate: '/users/{id}/groups',
             uriVariables: [
                 'id' => new Link(
@@ -64,7 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: "Le nom est obligatoire.")]
     #[Assert\Length(min: 3, minMessage: "Le nom doit contenir au moins 3 caractères.")]
-    #[Groups(['user:read', 'user:create'])]
+    #[Groups(['user:read', 'user:create','user:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 100, nullable: true)]
