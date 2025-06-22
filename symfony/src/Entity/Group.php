@@ -6,16 +6,18 @@ use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Post as ApiPost;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\GroupProcessor;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
     operations: [
-        new Post(processor: GroupProcessor::class),
+        new ApiPost(processor: GroupProcessor::class),
         new GetCollection(), // GET /api/groups
     ]
 )]
@@ -42,6 +44,7 @@ class Group
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->posts = new ArrayCollection();
     }
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -49,6 +52,27 @@ class Group
     #[Groups(['group:read', 'group:write'])]
     private ?User $creator = null;
 
+     #[ORM\OneToMany(mappedBy: 'groupOfPost', targetEntity: Post::class, cascade: ['persist', 'remove'])]
+        private Collection $posts;
+
+
+        /**
+         * @return Collection|Post[]
+         */
+        public function getPosts(): Collection
+        {
+            return $this->posts;
+        }
+
+        public function addPost(Post $post): self
+        {
+            if (!$this->posts->contains($post)) {
+                $this->posts->add($post);
+                $post->setGroupOfPost($this);
+            }
+
+            return $this;
+        }
 
     public function getId(): ?int
     {
