@@ -14,14 +14,18 @@ class GroupProcessor implements ProcessorInterface
         private ProcessorInterface $processor
     ) {}
 
-    public function process($data, Operation $operation, array $uriVariables = [], array $context = [])
-    {
-     error_log('GroupProcessor invoked');
-        if ($data instanceof Group && !$data->getCreator()) {
-            $data->setCreator($this->security->getUser());
-            error_log('Creator set to user id: ' . $this->security->getUser()->getId());
-        }
+   public function process($data, Operation $operation, array $uriVariables = [], array $context = [])
+   {
+       error_log('GroupProcessor invoked');
 
-        return $this->processor->process($data, $operation, $uriVariables, $context);
-    }
+       if ($data instanceof Group && !$data->getCreator()) {
+           $user = $this->security->getUser();
+           $data->setCreator($user);
+           error_log('Creator set to user id: ' . $user->getId());
+
+           $data->addUser($user); // <<< cette ligne pour ajouter le creator dans users
+       }
+
+       return $this->processor->process($data, $operation, $uriVariables, $context);
+   }
 }
