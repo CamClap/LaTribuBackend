@@ -24,6 +24,10 @@ class Invitation
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $response = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Group $group = null;
+
 
     public function getId(): ?int
     {
@@ -74,6 +78,18 @@ class Invitation
     public function setResponse(?string $response): static
     {
         $this->response = $response;
+
+        return $this;
+    }
+
+    public function getGroup(): ?Group
+    {
+        return $this->group;
+    }
+
+    public function setGroup(?Group $group): static
+    {
+        $this->group = $group;
 
         return $this;
     }

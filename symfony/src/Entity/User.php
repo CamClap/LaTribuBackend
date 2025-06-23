@@ -50,15 +50,15 @@ use App\Controller\UserGroupsController;
         new Put(processor: UserPasswordHasher::class),
         new Delete(security: "is_granted('ROLE_ADMIN')")
     ],
-    normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:create', 'user:write']]
+      normalizationContext: ['groups' => ['group:read', 'user:read']],
+      denormalizationContext: ['groups' => ['group:write', 'user:create', 'user:write']]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'group:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
