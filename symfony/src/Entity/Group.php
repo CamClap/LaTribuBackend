@@ -8,7 +8,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Post as ApiPost;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\ApiSubresource;
 use App\State\GroupProcessor;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
@@ -18,8 +20,12 @@ use ApiPlatform\Metadata\ApiFilter;
 #[ApiResource(
     operations: [
         new ApiPost(processor: GroupProcessor::class),
-        new GetCollection(), // GET /api/groups
-    ]
+        new Get(), // GET /api/groups
+        new GetCollection(), // GET /api/groups/{id}
+    ],
+    normalizationContext: ['groups' => ['group:read', 'user:read']],
+    denormalizationContext: ['groups' => ['group:write', 'user:create']],
+
 )]
 
 #[ApiFilter(SearchFilter::class, properties: ['users.id' => 'exact'])]
@@ -28,6 +34,7 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['group:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -49,7 +56,8 @@ class Group
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['group:read', 'group:write'])]
+    #[ApiSubresource]
+    #[Groups(['group:read', 'group:write', 'user:read'])]
     private ?User $creator = null;
 
      #[ORM\OneToMany(mappedBy: 'groupOfPost', targetEntity: Post::class, cascade: ['persist', 'remove'])]
