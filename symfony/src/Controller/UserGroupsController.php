@@ -24,7 +24,6 @@ class UserGroupsController
             $data[] = [
                 'id' => $group->getId(),
                 'name' => $group->getName(),
-                // tu peux ajouter plus d'infos si besoin
             ];
         }
 

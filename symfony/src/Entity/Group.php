@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\ApiSubresource;
 use App\State\GroupProcessor;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
@@ -23,9 +24,6 @@ use ApiPlatform\Metadata\ApiFilter;
         new Get(), // GET /api/groups
         new GetCollection(), // GET /api/groups/{id}
     ],
-    normalizationContext: ['groups' => ['group:read', 'user:read']],
-    denormalizationContext: ['groups' => ['group:write', 'user:create']],
-
 )]
 
 #[ApiFilter(SearchFilter::class, properties: ['users.id' => 'exact'])]
@@ -34,18 +32,16 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['group:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'group:read'])]
+    #[Assert\NotBlank(message: "Le nom du groupe est obligatoire.")]
     private ?string $name = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'family')]
-    #[Groups(['group:read', 'group:write'])]
     private Collection $users;
 
     public function __construct()
@@ -57,7 +53,6 @@ class Group
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[ApiSubresource]
-    #[Groups(['group:read', 'group:write', 'user:read'])]
     private ?User $creator = null;
 
      #[ORM\OneToMany(mappedBy: 'groupOfPost', targetEntity: Post::class, cascade: ['persist', 'remove'])]
