@@ -18,7 +18,6 @@ class UserGroupsController
     public function __invoke(Request $request, int $id): JsonResponse
     {
         $groups = $this->groupRepository->findGroupsByUserId($id);
-
         $data = [];
         foreach ($groups as $group) {
             $data[] = [
@@ -26,7 +25,6 @@ class UserGroupsController
                 'name' => $group->getName(),
             ];
         }
-
         return new JsonResponse($data);
     }
 }

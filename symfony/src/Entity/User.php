@@ -27,24 +27,6 @@ use App\Controller\UserGroupsController;
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet email.')]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(
-                    name: 'groups_for_user',
-                    uriTemplate: '/users/{id}/groups',
-                    controller: UserGroupsController::class,
-                    read: false
-                ),
-        new GetCollection(
-            uriTemplate: '/users/{id}/groups',
-            uriVariables: [
-                'id' => new Link(
-                    fromClass: User::class,
-                    fromProperty: 'family'
-                )
-            ],
-            normalizationContext: ['groups' => ['group:read']],
-            security: "is_granted('ROLE_USER')"
-        ),
         new Get(),
         new Post(processor: UserPasswordHasher::class),
         new Put(processor: UserPasswordHasher::class),
@@ -83,7 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
-    #[Groups(['user:create'])]
+    #[Groups(['user:create', 'user:write'])]
     private ?string $password = null;
 
     /**

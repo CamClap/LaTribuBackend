@@ -22,7 +22,6 @@ class UserPasswordHasher implements ProcessorInterface
             return $data;
         }
 
-        // Hash le mot de passe s'il est fourni
         if ($data->getPassword()) {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
             $data->setPassword($hashedPassword);
