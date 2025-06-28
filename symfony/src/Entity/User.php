@@ -30,7 +30,7 @@ use App\Controller\UserGroupsController;
         new Get(),
         new Post(processor: UserPasswordHasher::class),
         new Put(processor: UserPasswordHasher::class),
-        new Delete(security: "is_granted('ROLE_ADMIN')")
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
     ],
       normalizationContext: ['groups' => ['group:read', 'user:read']],
       denormalizationContext: ['groups' => ['group:write', 'user:create', 'user:write']]
@@ -56,16 +56,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
     #[Assert\Email(message: "Le format de l'email est invalide.")]
-    #[Groups(['user:read', 'user:create'])]
+
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
+
     private array $roles = [];
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
-    #[Groups(['user:create', 'user:write'])]
+
     private ?string $password = null;
 
     /**
@@ -73,7 +73,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
     #[ApiSubresource]
-    #[Groups(['user:read', 'group:read'])]
     private Collection $family;
 
     public function __construct()

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Post as ApiPost;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
@@ -15,9 +16,16 @@ use App\State\GroupProcessor;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\UserGroupsController;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
+#[ApiResource(
+    uriTemplate: '/users/{id}/groups',
+    operations: [
+        new GetCollection(controller: UserGroupsController::class),
+    ],
+)]
 #[ApiResource(
     operations: [
         new ApiPost(processor: GroupProcessor::class),
@@ -42,6 +50,7 @@ class Group
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'family')]
+
     private Collection $users;
 
     public function __construct()
