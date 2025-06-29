@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Entity;
-
-use ApiPlatform\Metadata\ApiSubresource;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
@@ -28,6 +26,7 @@ use App\Controller\UserGroupsController;
 #[ApiResource(
     operations: [
         new Get(),
+        new GetCollection(controller: UserGroupsController::class),
         new Post(processor: UserPasswordHasher::class),
         new Put(processor: UserPasswordHasher::class),
         new Delete(security: "is_granted('ROLE_ADMIN')"),
@@ -60,19 +59,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-
     private array $roles = [];
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
-
     private ?string $password = null;
 
     /**
      * @var Collection<int, Group>
      */
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
-    #[ApiSubresource]
     private Collection $family;
 
     public function __construct()

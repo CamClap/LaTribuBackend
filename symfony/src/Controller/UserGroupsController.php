@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UserGroupsController
 {
-    private $groupRepository;
+    private GroupRepository $groupRepository;
 
     public function __construct(GroupRepository $groupRepository)
     {
@@ -23,6 +23,7 @@ class UserGroupsController
             $data[] = [
                 'id' => $group->getId(),
                 'name' => $group->getName(),
+                'creator_id' => $group->getCreator()->getId(),
             ];
         }
         return new JsonResponse($data);
