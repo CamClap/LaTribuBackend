@@ -23,7 +23,7 @@ class GroupProcessor implements ProcessorInterface
            $data->setCreator($user);
            error_log('Creator set to user id: ' . $user->getId());
 
-           $data->addUser($user); // <<< cette ligne pour ajouter le creator dans users
+           $data->addUser($user);
        }
 
        return $this->processor->process($data, $operation, $uriVariables, $context);

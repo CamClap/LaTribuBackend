@@ -9,13 +9,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserCreateController
 {
-    private EntityManagerInterface $em;
-    private UserPasswordHasherInterface $passwordHasher;
-
-    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(private EntityManagerInterface $em, private UserPasswordHasherInterface $passwordHasher)
     {
-        $this->em = $em;
-        $this->passwordHasher = $passwordHasher;
     }
 
     public function __invoke(Request $request)
@@ -43,13 +38,9 @@ class UserCreateController
             $this->passwordHasher->hashPassword($user, $plainPassword)
         );
 
-        // Gestion optionnelle de la photo
         $photoFile = $request->files->get('photo');
         if ($photoFile) {
-            // Traitement du fichier (exemple : déplacement dans un dossier)
-            // $newFilename = uniqid().'.'.$photoFile->guessExtension();
-            // $photoFile->move($this->getParameter('user_photos_directory'), $newFilename);
-            // $user->setPicture($newFilename);
+
         }
 
         $this->em->persist($user);

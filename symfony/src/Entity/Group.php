@@ -29,8 +29,8 @@ use App\Controller\UserGroupsController;
 #[ApiResource(
     operations: [
         new ApiPost(processor: GroupProcessor::class),
-        new Get(), // GET /api/groups
-        new GetCollection(), // GET /api/groups/{id}
+        new Get(),
+        new GetCollection(),
     ],
 )]
 

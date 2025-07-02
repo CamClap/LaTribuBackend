@@ -8,11 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UserGroupsController
 {
-    private GroupRepository $groupRepository;
-
-    public function __construct(GroupRepository $groupRepository)
+    public function __construct(private GroupRepository $groupRepository)
     {
-        $this->groupRepository = $groupRepository;
     }
 
     public function __invoke(Request $request, int $id): JsonResponse

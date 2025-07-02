@@ -37,7 +37,7 @@ class InvitationController extends AbstractController
             return new JsonResponse(['error' => 'Non autorisé'], 403);
         }
 
-        $path = bin2hex(random_bytes(16)); // ex: 32 caractères uniques
+        $path = bin2hex(random_bytes(16));
 
         $invitation = new Invitation();
         $invitation->setEmail($email);

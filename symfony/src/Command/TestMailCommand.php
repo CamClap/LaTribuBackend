@@ -31,7 +31,7 @@ class TestMailCommand extends Command
     {
         $email = (new Email())
             ->from('camille.clappaz@laplateforme.io')
-            ->to('camille.clappaz@laplateforme.io') // change selon ta cible
+            ->to('camille.clappaz@laplateforme.io')
             ->subject('Test Symfony Mailer')
             ->text('Ceci est un mail de test envoyé depuis Symfony.');
 

@@ -26,7 +26,13 @@ use App\Controller\UserGroupsController;
 #[ApiResource(
     operations: [
         new Get(),
-        new GetCollection(controller: UserGroupsController::class),
+        new GetCollection(), // GET /users
+        new Get(
+            uriTemplate: '/users/{id}/groups',
+            controller: UserGroupsController::class,
+            read: false,
+            name: 'user_groups',
+        ),
         new Post(processor: UserPasswordHasher::class),
         new Put(processor: UserPasswordHasher::class),
         new Delete(security: "is_granted('ROLE_ADMIN')"),
@@ -55,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
     #[Assert\Email(message: "Le format de l'email est invalide.")]
-
+    #[Groups(['user:read', 'user:create','user:write'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -63,12 +69,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Groups(['user:create', 'user:write'])]
     private ?string $password = null;
 
     /**
      * @var Collection<int, Group>
      */
-    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users', cascade: ['remove'])]
     private Collection $family;
 
     public function __construct()

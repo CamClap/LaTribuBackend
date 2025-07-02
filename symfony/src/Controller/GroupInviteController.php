@@ -20,7 +20,7 @@ class GroupInviteController extends AbstractController
         Request $request,
         GroupRepository $groupRepo,
         EntityManagerInterface $em,
-         MailerInterface $mailer
+        MailerInterface $mailer
     ): JsonResponse {
         $group = $groupRepo->find($id);
         if (!$group) {
@@ -34,14 +34,11 @@ class GroupInviteController extends AbstractController
             return new JsonResponse(['error' => 'Email is required'], 400);
         }
 
-        // Générer un token
         $token = bin2hex(random_bytes(32));
 
-        // Construire le lien d'acceptation
         $acceptPath = "https://ton-app.com/invitations/respond?token=$token&response=yes";
         $declinePath = "https://ton-app.com/invitations/respond?token=$token&response=no";
 
-        // Créer l'invitation
         $invitation = new Invitation();
         $invitation->setEmail($email);
         $invitation->setPath($acceptPath);
